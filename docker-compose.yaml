@@ -5,9 +5,10 @@ services:
     depends_on:
       - db
     ports:
-      - 3000:3000
+      - ${SERVER_EXTERNAL_PORT}:${SERVER_INTERNAL_PORT}
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - SERVER_PORT=${SERVER_INTERNAL_PORT}
 
   db:
     image: postgres:16
