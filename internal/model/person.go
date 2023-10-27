@@ -18,12 +18,6 @@ type Person struct {
 
 var ErrPersonNotFound = errors.New("person not found")
 
-// var testPersons []Person = []Person{
-// 	{ID: 1, Name: "Dmitriy", Surname: "Ushakov", Patronymic: "Vasilevich"},
-// 	{ID: 2, Name: "Anton", Surname: "Yakimenko", Patronymic: "Vladimerovich"},
-// 	{ID: 3, Name: "Elon", Surname: "Mask"},
-// }
-
 func (p *Person) Validate() error {
 	var errs []error
 
