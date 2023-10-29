@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"go.uber.org/zap"
 
 	"github.com/anton-yak/person-enricher/internal/model"
 	postgres "github.com/anton-yak/person-enricher/internal/repository"
@@ -18,7 +17,13 @@ import (
 
 type ctxKey string
 
-func MakeHTTPHandler(enricher model.Enricher, pgxPool *pgxpool.Pool, logger *zap.SugaredLogger) http.Handler {
+type Logger interface {
+	Infof(template string, args ...interface{})
+	Debugf(template string, args ...interface{})
+	Errorf(template string, args ...interface{})
+}
+
+func MakeHTTPHandler(enricher model.Enricher, pgxPool *pgxpool.Pool, logger Logger) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(func(next http.Handler) http.Handler {
@@ -83,7 +88,7 @@ func createOrUpdatePerson(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	logger := ctx.Value(ctxKey("logger")).(*zap.SugaredLogger)
+	logger := ctx.Value(ctxKey("logger")).(Logger)
 
 	d := json.NewDecoder(r.Body)
 	var person model.Person
@@ -139,7 +144,7 @@ func createOrUpdatePerson(w http.ResponseWriter, r *http.Request) {
 func deletePerson(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	logger := ctx.Value(ctxKey("logger")).(*zap.SugaredLogger)
+	logger := ctx.Value(ctxKey("logger")).(Logger)
 
 	person := ctx.Value(ctxKey("person")).(*model.Person)
 	repository := ctx.Value(ctxKey("repository")).(model.Repository)
@@ -167,7 +172,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 func getAllPersons(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	logger := ctx.Value(ctxKey("logger")).(*zap.SugaredLogger)
+	logger := ctx.Value(ctxKey("logger")).(Logger)
 	repository := ctx.Value(ctxKey("repository")).(model.Repository)
 
 	query := r.URL.Query()

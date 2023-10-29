@@ -6,15 +6,18 @@ import (
 
 	"github.com/anton-yak/person-enricher/internal/model"
 	"github.com/jackc/pgx/v5"
-	"go.uber.org/zap"
 )
+
+type Logger interface {
+	Errorf(template string, args ...interface{})
+}
 
 type PostgresRepository struct {
 	tx     pgx.Tx
-	logger *zap.SugaredLogger
+	logger Logger
 }
 
-func NewPostgresRepository(tx pgx.Tx, logger *zap.SugaredLogger) PostgresRepository {
+func NewPostgresRepository(tx pgx.Tx, logger Logger) PostgresRepository {
 	return PostgresRepository{
 		tx:     tx,
 		logger: logger,
